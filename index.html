@@ -1,10 +1,10 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>إدارة صندوق عمارة الريان 4</title>
+
 <style>
 :root{
   --bg:#f4f6fb;
@@ -25,665 +25,194 @@
   --glass: rgba(255,255,255,0.03);
 }
 *{box-sizing:border-box}
-body { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background:var(--bg); color:var(--text); padding:18px; }
-.header { display:flex; align-items:center; gap:12px; justify-content:center; margin-bottom:12px }
-.header-logo img{ width:64px; height:64px; border-radius:10px; background:var(--card); padding:8px; box-shadow:0 6px 18px var(--glass)}
-.header h1{ margin:0; font-size:18px }
-.controls { display:flex; gap:8px; justify-content:center; margin-bottom:12px }
-.card { background:var(--card); padding:14px; border-radius:12px; margin-bottom:14px; box-shadow:0 6px 18px var(--glass); }
-.row{display:flex;gap:8px}
-.input, select, button, textarea{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(0,0,0,0.06);font-size:15px;margin-bottom:10px}
-select,input[type=number]{-moz-appearance:textfield}
-button.primary{background:var(--accent);color:white;border:none}
-button.ghost{background:transparent;border:1px solid rgba(0,0,0,0.06)}
-.totals{display:flex;gap:8px;flex-wrap:wrap}
-.total{flex:1;min-width:140px;padding:12px;border-radius:10px;background:var(--card);box-shadow:0 4px 12px var(--glass);border:1px solid rgba(0,0,0,0.05);}
-.total h4{margin:0;font-size:13px;color:var(--muted)}
-.total p{margin:8px 0 0 0;font-size:18px;font-weight:700}
-.entry{padding:10px;border-bottom:1px dashed rgba(0,0,0,0.05)}
-.entry .meta{font-size:13px;color:var(--muted)}
-.action-buttons{display:flex;gap:6px;justify-content:flex-start;margin-top:8px}
-.btn-edit{background:var(--warning);border:none;padding:6px 10px;border-radius:8px}
-.btn-del{background:var(--danger);border:none;padding:6px 10px;border-radius:8px;color:white}
+body{
+  margin:0;
+  font-family: system-ui,-apple-system,Segoe UI,Roboto;
+  background:var(--bg);
+  color:var(--text);
+  padding:16px;
+}
+.card{
+  background:var(--card);
+  padding:14px;
+  border-radius:12px;
+  margin-bottom:14px;
+  box-shadow:0 6px 18px var(--glass);
+}
+.input,select,button,textarea{
+  width:100%;
+  padding:10px;
+  border-radius:10px;
+  border:1px solid #ddd;
+  font-size:15px;
+  margin-bottom:10px;
+}
+button.primary{background:var(--accent);color:#fff;border:none}
+button.ghost{background:transparent;border:1px solid #ccc}
+
+.header{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  justify-content:center;
+  margin-bottom:12px
+}
+.header img{
+  width:56px;
+  height:56px;
+  border-radius:10px;
+}
 .small{font-size:13px;color:var(--muted)}
-.print-page{display:none}
-.footer-note{font-size:13px;color:var(--muted);text-align:center;margin-top:8px}
-.modal {
-  display: none; /* Hidden by default, controlled by JS */
-  position: fixed;
-  z-index: 100; /* Above everything else */
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgba(0,0,0,0.6); /* Dark overlay */
-  align-items: center;
-  justify-content: center;
+
+.controls{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  justify-content:center;
 }
-.modal-content {
-  /* ... existing styles ... */
+
+.login-modal{
+  position:fixed;
+  inset:0;
+  background:var(--bg);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:999;
 }
-.backup-alert {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background-color: var(--warning);
-  color: var(--text);
-  padding: 15px;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  z-index: 99;
-  display: none;
-  max-width: 300px;
-  text-align: right;
+.login-content{
+  background:var(--card);
+  padding:30px;
+  width:100%;
+  max-width:360px;
+  border-radius:14px;
+  box-shadow:0 10px 30px rgba(0,0,0,.2);
+  border-top:5px solid var(--accent);
 }
-.backup-alert button {
-  margin-top: 10px;
-  width: 100%;
+
+.totals{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap
 }
-  /* ... existing styles ... */
+.total{
+  flex:1;
+  min-width:140px;
+  background:var(--card);
+  padding:12px;
+  border-radius:10px;
+  box-shadow:0 4px 12px var(--glass)
 }
-.login-modal {
-  display: flex; /* Initially visible until logged in */
-  position: fixed;
-  z-index: 101; /* Higher than edit modal */
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background-color: var(--bg);
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  padding: 20px;
+.total h4{margin:0;font-size:13px;color:var(--muted)}
+.total p{margin-top:6px;font-size:18px;font-weight:700}
+
+@media(min-width:800px){
+  body{max-width:900px;margin:auto}
 }
-.login-content {
-  background-color: var(--card);
-  padding: 30px;
-  border-radius: 12px;
-  width: 90%;
-  max-width: 350px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  border-top: 5px solid var(--accent); /* شريط علوي جذاب */
-}
-.login-content h3 {
-  margin-top: 0;
-  text-.modal-content {
-  background-color: var(--card);
-  margin: auto;
-  padding: 20px;
-  border-radius: 12px;
-  width: 90%;
-  max-width: 400px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  border-left: 5px solid var(--accent); /* شريط جانبي أنيق */
-}
-@media(min-width:800px){.container{max-width:900px;margin:0 auto}}
 </style>
 </head>
+
 <body>
-<div class="header">
-  <div class="header-logo"><img src="https://cdn-icons-png.flaticon.com/512/69/69524.png" alt="عمارة"></div>
-  <div>
-    <h1>إدارة صندوق عمارة الريان 4</h1>
-    <div class="small">لوحة إدارة الدخل والمصاريف — مصمّم للهاتف والكمبيوتر</div>
+
+<!-- LOGIN -->
+<div class="login-modal" id="loginModal">
+  <div class="login-content">
+    <h3>تسجيل الدخول</h3>
+    <input id="username" class="input" placeholder="اسم المستخدم">
+    <input id="password" type="password" class="input" placeholder="كلمة المرور">
+    <button class="primary" onclick="login()">دخول</button>
+    <div class="small">admin / admin</div>
   </div>
 </div>
 
-<div class="controls" id="mainControls" style="display:none;">
+<!-- HEADER -->
+<div class="header">
+  <img src="https://cdn-icons-png.flaticon.com/512/69/69524.png">
+  <div>
+    <h2>إدارة صندوق عمارة الريان 4</h2>
+    <div class="small">متوافق مع الجوال والكمبيوتر</div>
+  </div>
+</div>
+
+<div class="controls" id="mainControls" style="display:none">
   <button class="primary" onclick="toggleTheme()">تبديل النمط</button>
-  <button class="ghost" onclick="downloadBackup()">تحميل نسخة احتياطية</button>
-  <button class="ghost" onclick="restoreBackup()">استعادة نسخة</button>
   <button class="ghost" onclick="logout()">تسجيل خروج</button>
 </div>
 
-<div class="card" id="totalsCard" style="display:none;">
+<div class="card" id="totalsCard" style="display:none">
   <div class="totals">
-    <div class="total">
-      <h4>الرصيد الكلي</h4>
-      <p id="balanceTotal">0 شيكل</p>
-    </div>
-    <div class="total">
-      <h4>كاش</h4>
-      <p id="balanceCash">0 شيكل</p>
-    </div>
-    <div class="total">
-      <h4>تطبيق بنكي</h4>
-      <p id="balanceApp">0 شيكل</p>
-    </div>
-    <div class="total">
-      <h4>المتبقي في الصندوق</h4>
-      <p id="balanceRemaining">0 شيكل</p>
-    </div>
-  </div>
-  <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
-    <div class="small">مجموع المصروفات: <strong id="totalExpenses">0</strong> شيكل</div>
-    <div class="small">مجموع المشتريات: <strong id="totalPurchases">0</strong> شيكل</div>
-    <div class="small">مجموع الدخل: <strong id="totalIncome">0</strong> شيكل</div>
+    <div class="total"><h4>الرصيد</h4><p id="balance">0</p></div>
   </div>
 </div>
 
-<div class="card" id="addEntryCard" style="display:none;">
-  <h3>إضافة حركة جديدة</h3>
-  <div class="row">
-    <select id="type" class="input" style="max-width:180px">
-      <option value="دخل">دخل</option>
-      <option value="مصروف">مصروف</option>
-      <option value="شراء">شراء</option>
-    </select>
-    <select id="category" class="input" style="max-width:180px">
-      <option value="">تصنيف (اختياري)</option>
-      <option value="إيجار">إيجار</option>
-      <option value="فواتير">فواتير</option>
-      <option value="صيانة">صيانة</option>
-      <option value="مشتريات">مشتريات</option>
-      <option value="رواتب">رواتب</option>
-      <option value="أخرى">أخرى</option>
-    </select>
-      <option value="دخل">دخل</option>
-      <option value="مصروف">مصروف</option>
-      <option value="شراء">شراء</option>
-    </select>
-    <select id="paymentSource" class="input" style="max-width:180px">
-      <option value="كاش">كاش</option>
-      <option value="تطبيق بنكي">تطبيق بنكي</option>
-    </select>
-    <input type="date" id="entryDate" class="input" style="max-width:180px" />
-      <option value="كاش">كاش</option>
-      <option value="تطبيق بنكي">تطبيق بنكي</option>
-    </select>
-  </div>
-  <input id="source" class="input" placeholder="اسم الحركة أو المصدر/المستفيد" style="margin-top: 0;" />
-  <input id="amount" class="input" type="number" placeholder="المبلغ (شيكل)" style="margin-top: 0;" />
-  <textarea id="notes" class="input" rows="2" placeholder="ملاحظات (اختياري)" style="margin-top: 0;"></textarea>
-  <div class="row" style="margin-top:10px">
-    <button class="primary" onclick="addEntry()">➕ إضافة</button>
-    <button class="ghost" onclick="clearForm()">مسح الحقول</button>
-  </div>
+<div class="card" id="addCard" style="display:none">
+  <h3>إضافة حركة</h3>
+  <select id="type" class="input">
+    <option value="دخل">دخل</option>
+    <option value="مصروف">مصروف</option>
+  </select>
+  <input id="title" class="input" placeholder="اسم الحركة">
+  <input id="amount" type="number" class="input" placeholder="المبلغ">
+  <button class="primary" onclick="addEntry()">إضافة</button>
 </div>
 
-<div class="card" id="logCard" style="display:none;">
-  <h3>سجل الحركات</h3>
-  <input type="text" id="search" class="input" placeholder="بحث باسم الحركة أو الملاحظات" onkeyup="renderLog()" />
-  <div class="row" style="margin-bottom:10px;">
-    <select id="displayLimit" class="input" style="max-width:150px;" onchange="renderLog()">
-      <option value="5">عرض 5 حركات</option>
-      <option value="10">عرض 10 حركات</option>
-      <option value="20">عرض 20 حركة</option>
-      <option value="all">عرض الكل</option>
-    </select>
-    <select id="monthFilter" class="input" onchange="renderLog()">
-      <option value="">كل الشهور</option>
-    </select>
-    <select id="filterType" class="input" onchange="renderLog()">
-      <option value="">كل الأنواع</option>
-      <option value="دخل">دخل</option>
-      <option value="مصروف">مصروف</option>
-      <option value="شراء">شراء</option>
-    </select>
-    <select id="filterPayment" class="input" onchange="renderLog()">
-      <option value="">كل طرق الدفع</option>
-      <option value="كاش">كاش</option>
-      <option value="تطبيق بنكي">تطبيق بنكي</option>
-    </select>
-  </div>
+<div class="card" id="logCard" style="display:none">
+  <h3>السجل</h3>
   <div id="log"></div>
 </div>
 
-<div class="card" id="exportCard" style="display:none;">
-  <h3>تصدير / معاينة</h3>
-  <div class="row">
-    <button class="primary" onclick="exportCSV()">📄 تصدير CSV</button>
-    <button class="ghost" onclick="previewReport()">👁️ معاينة التقرير</button>
-    <button class="ghost" onclick="printReport()">🖨️ طباعة التقرير</button>
-  </div>
-  <div class="footer-note">ملف CSV ونسخة احتياطية تُحفظ محلياً على جهازك</div>
-</div>
-
-<div class="print-page" id="printPage">
-  <h2>تقرير إدارة صندوق عمارة الريان 4</h2>
-  <p>الرصيد الكلي: <span id="printTotal">0</span> شيكل</p>
-  <p>كاش: <span id="printCash">0</span> شيكل</p>
-  <p>تطبيق بنكي: <span id="printApp">0</span> شيكل</p>
-  <p>المتبقي في الصندوق: <span id="printRemaining">0</span> شيكل</p>
-  <p>مجموع المصروفات: <span id="printExpenses">0</span> شيكل</p>
-  <p>مجموع المشتريات: <span id="printPurchases">0</span> شيكل</p>
-  <hr>
-  <table>
-    <thead>
-      <tr>
-        <th>اسم الحركة</th>
-        <th>نوع الحركة</th>
-        <th>طريقة الدفع</th>
-        <th>المبلغ</th>
-        <th>التاريخ</th>
-        <th>ملاحظات</th>
-      </tr>
-    </thead>
-    <tbody id="printLog"></tbody>
-  </table>
-</div>
-
-<div class="modal" id="editModal">
-  <div class="modal-content">
-    <h3>تعديل الحركة</h3>
-    <input type="text" id="editSource" class="input" placeholder="اسم الحركة" />
-    <input type="number" id="editAmount" class="input" placeholder="المبلغ" />
-    <input type="date" id="editDate" class="input" />
-    <select id="editType" class="input">
-      <option value="دخل">دخل</option>
-      <option value="مصروف">مصروف</option>
-      <option value="شراء">شراء</option>
-    </select>
-    <select id="editCategory" class="input">
-      <option value="">تصنيف (اختياري)</option>
-      <option value="إيجار">إيجار</option>
-      <option value="فواتير">فواتير</option>
-      <option value="صيانة">صيانة</option>
-      <option value="مشتريات">مشتريات</option>
-      <option value="رواتب">رواتب</option>
-      <option value="أخرى">أخرى</option>
-    </select>
-      <option value="دخل">دخل</option>
-      <option value="مصروف">مصروف</option>
-      <option value="شراء">شراء</option>
-    </select>
-    <select id="editPayment" class="input">
-      <option value="كاش">كاش</option>
-      <option value="تطبيق بنكي">تطبيق بنكي</option>
-    </select>
-    <textarea id="editNotes" class="input" rows="2" placeholder="ملاحظات"></textarea>
-    <div style="display:flex;gap:8px;margin-top:10px">
-      <button id="saveEdit" class="primary">💾 حفظ</button>
-      <button onclick="closeModal()" class="ghost">إغلاق</button>
-    </div>
-  </div>
-</div>
-
 <script>
-// بيانات مخزنة محلياً
-let editIndex = null;
-const DEFAULT_PASSWORD = 'admin'; // كلمة مرور افتراضية
-let password = localStorage.getItem('amarah_password') || DEFAULT_PASSWORD;
-let data = JSON.parse(localStorage.getItem('amarah') || '[]');
-let theme = localStorage.getItem('amarah_theme') || 'light';
-if(theme === 'dark') document.documentElement.setAttribute('data-theme','dark');
-
-function formatPrint(x){ return (Number(x)||0).toFixed(2) + ' شيكل' }
-
-
-
-function renderLog(){
-  const log = document.getElementById('log'); log.innerHTML='';
-  const searchTerm = document.getElementById('search').value.toLowerCase();
-  const filterType = document.getElementById('filterType').value;
-  const filterPayment = document.getElementById('filterPayment').value;
-  const monthFilter = document.getElementById('monthFilter').value;
-
-  // عكس ترتيب البيانات لعرض الأحدث أولاً
-  const sortedData = [...data].reverse();
-
-  const filteredData = sortedData.filter(it => {
-    const matchesSearch = it.source.toLowerCase().includes(searchTerm) || (it.notes && it.notes.toLowerCase().includes(searchTerm));
-    const matchesType = !filterType || it.type === filterType;
-    const matchesPayment = !filterPayment || it.paymentSource === filterPayment;
-    
-    // فلترة الشهر
-    const entryDate = new Date(it.date);
-    const entryMonthYear = `${entryDate.getFullYear()}-${(entryDate.getMonth() + 1).toString().padStart(2, '0')}`;
-    const matchesMonth = !monthFilter || entryMonthYear === monthFilter;
-
-    return matchesSearch && matchesType && matchesPayment && matchesMonth;
-  });
-
-  const displayLimit = document.getElementById('displayLimit').value;
-  // فرز البيانات: الأحدث أولاً (افتراضي)
-  const sortedData = filteredData.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-  const displayLimit = document.getElementById('displayLimit').value;
-  const limitedData = displayLimit === 'all' ? sortedData : sortedData.slice(0, parseInt(displayLimit));
-
-  limitedData.forEach((it,i)=>{
-    const div = document.createElement('div'); div.className='entry';
-    div.innerHTML = `\n      <div style="display:flex;justify-content:space-between;align-items:center">\n        <div>\n          <strong>${it.source}</strong><div class=\"meta\">${it.type} — ${it.paymentSource} — ${it.date}</div>\n        </div>\n        <div style=\"text-align:left\">\n          <div style=\"font-weight:700;margin-bottom:6px\">${(it.amount||0).toFixed(2)} شيكل</div>\n          <div class=\"action-buttons\">\n            <button class=\"btn-edit\" onclick=\"openEditModal(${i})\">تعديل</button>\n            <button class=\"btn-del\" onclick=\"deleteEntry(${i})\">حذف</button>\n          </div>\n        </div>\n      </div>`;
-    if(it.notes) div.innerHTML += `<div class=\"small\">ملاحظة: ${it.notes}</div>`;
-    log.appendChild(div);
-  });
-  
-  // إظهار عدد الحركات المفلترة
-  const logCard = document.getElementById('logCard');
-  const countDiv = document.createElement('div');
-  countDiv.className = 'small';
-  countDiv.style.textAlign = 'center';
-  countDiv.textContent = `عرض ${limitedData.length} من أصل ${filteredData.length} حركة مطابقة`;
-  log.appendChild(countDiv);
-
-  updateBalances(filteredData);
-}
-
-function updateBalances(dataToUse = data){
-  let balanceCash = 0, balanceApp = 0, totalExpenses=0, totalPurchases=0, totalIncome=0;
-  dataToUse.forEach(it=>{
-    if(it.paymentSource === 'كاش'){
-      balanceCash += (it.type==='مصروف'||it.type==='شراء')? -it.amount: it.amount;
-    } else { balanceApp += (it.type==='مصروف'||it.type==='شراء')? -it.amount: it.amount; }
-    if(it.type==='مصروف') totalExpenses += it.amount;
-    if(it.type==='شراء') totalPurchases += it.amount;
-    if(it.type==='دخل') totalIncome += it.amount;
-  });
-  document.getElementById('balanceCash').textContent = formatPrint(balanceCash);
-  document.getElementById('balanceApp').textContent = formatPrint(balanceApp);
-  const totalBalance = balanceCash + balanceApp;
-  document.getElementById('balanceTotal').textContent = formatPrint(totalBalance);
-  document.getElementById('balanceRemaining').textContent = formatPrint(totalBalance);
-
-  // تحسين الألوان
-  document.getElementById('balanceTotal').style.color = totalBalance >= 0 ? 'var(--accent)' : 'var(--danger)';
-  document.getElementById('balanceRemaining').style.color = totalBalance >= 0 ? 'var(--accent)' : 'var(--danger)';
-  document.getElementById('balanceCash').style.color = balanceCash >= 0 ? 'var(--accent)' : 'var(--danger)';
-  document.getElementById('balanceApp').style.color = balanceApp >= 0 ? 'var(--accent)' : 'var(--danger)';
-  document.getElementById('totalExpenses').textContent = formatPrint(totalExpenses);
-  document.getElementById('totalPurchases').textContent = formatPrint(totalPurchases);
-  document.getElementById('totalIncome').textContent = formatPrint(totalIncome);
-}
-
-function addEntry(){
-  const type = document.getElementById('type').value;
-  const category = document.getElementById('category').value;
-  const paymentSource = document.getElementById('paymentSource').value;
-  const source = document.getElementById('source').value.trim();
-  const amount = Number(document.getElementById('amount').value);
-  const notes = document.getElementById('notes').value.trim();
-  if(!source || !amount) return alert('اكتب اسم الحركة والمبلغ');
-  const dateInput = document.getElementById('entryDate').value;
-  const date = dateInput ? new Date(dateInput).toLocaleString('ar-EG') : new Date().toLocaleString('ar-EG');
-  data.push({type,category,paymentSource,source,amount,date,notes});
-  document.getElementById('entryDate').value = '';
-  localStorage.setItem('amarah', JSON.stringify(data));
-  document.getElementById('source').value=''; document.getElementById('amount').value=''; document.getElementById('notes').value='';
-  renderLog();
-}
-
-function deleteEntry(i){ if(!confirm('أكيد تريد تحذف الحركة؟')) return; data.splice(i,1); localStorage.setItem('amarah', JSON.stringify(data)); renderLog(); }
-
-function openEditModal(i){ 
-  const it=data[i]; 
-  editIndex=i; 
-  document.getElementById('editSource').value=it.source; 
-  document.getElementById('editAmount').value=it.amount; 
-  document.getElementById('editType').value=it.type; 
-  document.getElementById('editPayment').value=it.paymentSource; 
-  document.getElementById('editNotes').value=it.notes||''; 
-  document.getElementById('editCategory').value=it.category||''; 
-  
-  // تحويل التاريخ من ar-EG إلى صيغة yyyy-mm-dd
-  const dateObj = new Date(it.date);
-  const formattedDate = dateObj.getFullYear() + '-' + 
-                        (dateObj.getMonth() + 1).toString().padStart(2, '0') + '-' + 
-                        dateObj.getDate().toString().padStart(2, '0');
-  document.getElementById('editDate').value = formattedDate;
-
-  document.getElementById('editModal').style.display='flex'; 
-}
-
-document.getElementById('saveEdit').addEventListener('click', function(){ 
-  const newSource=document.getElementById('editSource').value.trim(); 
-  const newAmount=Number(document.getElementById('editAmount').value); 
-  const newDateInput=document.getElementById('editDate').value;
-  const newType=document.getElementById('editType').value; 
-  const newCategory=document.getElementById('editCategory').value;
-  const newPayment=document.getElementById('editPayment').value; 
-  const newNotes=document.getElementById('editNotes').value; 
-  
-  if(!newSource||!newAmount) return alert('اكمال الحقول'); 
-  
-  // تحويل التاريخ الجديد إلى صيغة ar-EG
-  const newDate = new Date(newDateInput).toLocaleString('ar-EG');
-
-  data[editIndex]={
-    source:newSource,
-    amount:newAmount,
-    date:newDate,
-    type:newType,
-    category:newCategory,
-    paymentSource:newPayment,
-    notes:newNotes
-  }; 
-  localStorage.setItem('amarah',JSON.stringify(data)); 
-  closeModal(); 
-  renderLog(); 
-});
-
-function closeModal(){ document.getElementById('editModal').style.display='none'; }
-
-function openChangePasswordModal(){
-  document.getElementById('loginModal').style.display = 'none';
-  document.getElementById('changePasswordModal').style.display = 'flex';
-}
-
-function closeChangePasswordModal(){
-  document.getElementById('changePasswordModal').style.display = 'none';
-  // إذا لم يكن المستخدم مسجلاً دخوله، أعد إظهار شاشة الدخول
-  if (!localStorage.getItem('amarah_loggedIn')) {
-    document.getElementById('loginModal').style.display = 'flex';
-  }
-}
+const USER="admin", PASS="admin";
+let data = JSON.parse(localStorage.getItem("amarah")||"[]");
 
 function login(){
-  const input = document.getElementById('passwordInput').value;
-  
-  if (input === password) {
-    localStorage.setItem('amarah_loggedIn', 'true');
-    document.getElementById('loginModal').style.display = 'none';
-    showMainContent();
-    renderLog();
-  } else {
-    alert('كلمة المرور غير صحيحة');
-  }
+  if(username.value===USER && password.value===PASS){
+    localStorage.setItem("login","1");
+    loginModal.style.display="none";
+    show();
+  }else alert("بيانات الدخول غير صحيحة");
 }
 
 function logout(){
-  localStorage.removeItem('amarah_loggedIn');
-  document.getElementById('loginModal').style.display = 'flex';
-  hideMainContent();
+  localStorage.removeItem("login");
+  location.reload();
 }
 
-function changePassword(){
-  const oldPass = document.getElementById('oldPasswordInput').value;
-  const newPass = document.getElementById('newPasswordInput').value;
-  const confirmPass = document.getElementById('confirmNewPasswordInput').value;
-
-  if (oldPass !== password) {
-    return alert('كلمة المرور القديمة غير صحيحة');
-  }
-  if (newPass.length < 4) {
-    return alert('يجب أن تكون كلمة المرور الجديدة 4 أحرف على الأقل');
-  }
-  if (newPass !== confirmPass) {
-    return alert('كلمة المرور الجديدة وتأكيدها غير متطابقين');
-  }
-
-  password = newPass;
-  localStorage.setItem('amarah_password', newPass);
-  alert('تم تغيير كلمة المرور بنجاح!');
-  closeChangePasswordModal();
-  // إذا كان المستخدم مسجلاً دخوله، أعد إظهار المحتوى الرئيسي
-  if (localStorage.getItem('amarah_loggedIn')) {
-    showMainContent();
-  }
+function show(){
+  mainControls.style.display="flex";
+  totalsCard.style.display="block";
+  addCard.style.display="block";
+  logCard.style.display="block";
+  render();
 }
 
-function checkLogin(){
-  // إذا لم يتم تعيين كلمة مرور بعد، قم بتعيين الافتراضية
-  if (!localStorage.getItem('amarah_password')) {
-    localStorage.setItem('amarah_password', DEFAULT_PASSWORD);
-  }
-  
-  if (localStorage.getItem('amarah_loggedIn') === 'true') {
-    document.getElementById('loginModal').style.display = 'none';
-    showMainContent();
-    renderLog();
-  } else {
-    document.getElementById('loginModal').style.display = 'flex';
-    hideMainContent();
-  }
+function addEntry(){
+  if(!title.value||!amount.value) return;
+  data.push({t:type.value,n:title.value,a:+amount.value});
+  localStorage.setItem("amarah",JSON.stringify(data));
+  title.value=amount.value="";
+  render();
 }
 
-function showMainContent(){
-  document.getElementById('mainControls').style.display = 'flex';
-  document.getElementById('totalsCard').style.display = 'block';
-  document.getElementById('addEntryCard').style.display = 'block';
-  document.getElementById('logCard').style.display = 'block';
-  document.getElementById('exportCard').style.display = 'block';
-}
-
-function hideMainContent(){
-  document.getElementById('mainControls').style.display = 'none';
-  document.getElementById('totalsCard').style.display = 'none';
-  document.getElementById('addEntryCard').style.display = 'none';
-  document.getElementById('logCard').style.display = 'none';
-  document.getElementById('exportCard').style.display = 'none';
-}
-
-function clearForm(){ document.getElementById('source').value=''; document.getElementById('amount').value=''; document.getElementById('notes').value=''; }
-
-function populateMonthFilter(){
-  const monthFilter = document.getElementById('monthFilter');
-  monthFilter.innerHTML = '<option value="">كل الشهور</option>'; // إعادة تعيين
-  
-  const uniqueMonths = new Set();
-  data.forEach(it => {
-    const date = new Date(it.date);
-    const monthYear = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}`;
-    uniqueMonths.add(monthYear);
+function render(){
+  let bal=0;
+  log.innerHTML="";
+  data.forEach(e=>{
+    bal+= e.t==="دخل"?e.a:-e.a;
+    log.innerHTML+=`<div class="small">${e.n} — ${e.a} شيكل</div>`;
   });
-
-  const sortedMonths = Array.from(uniqueMonths).sort().reverse();
-
-  sortedMonths.forEach(monthYear => {
-    const [year, month] = monthYear.split('-');
-    const date = new Date(year, month - 1);
-    const monthName = date.toLocaleString('ar-EG', { month: 'long', year: 'numeric' });
-    const option = document.createElement('option');
-    option.value = monthYear;
-    option.textContent = monthName;
-    monthFilter.appendChild(option);
-  });
+  balance.textContent=bal+" شيكل";
 }
 
-function exportCSV(){ 
-  // تطبيق نفس الفلترة المستخدمة في renderLog
-  const searchTerm = document.getElementById('search').value.toLowerCase();
-  const filterType = document.getElementById('filterType').value;
-  const filterPayment = document.getElementById('filterPayment').value;
-  const monthFilter = document.getElementById('monthFilter').value;
-
-  const filteredData = data.filter(it => {
-    const matchesSearch = it.source.toLowerCase().includes(searchTerm) || (it.notes && it.notes.toLowerCase().includes(searchTerm));
-    const matchesType = !filterType || it.type === filterType;
-    const matchesPayment = !filterPayment || it.paymentSource === filterPayment;
-    
-    // فلترة الشهر
-    const entryDate = new Date(it.date);
-    const entryMonthYear = `${entryDate.getFullYear()}-${(entryDate.getMonth() + 1).toString().padStart(2, '0')}`;
-    const matchesMonth = !monthFilter || entryMonthYear === monthFilter;
-
-    return matchesSearch && matchesType && matchesPayment && matchesMonth;
-  });
-
-  if(!filteredData.length) return alert('لا توجد بيانات مطابقة للفلتر لتصديرها.'); 
-  
-  let csv='اسم الحركة,التصنيف,نوع الحركة,طريقة الدفع,المبلغ,التاريخ,ملاحظات\n'; 
-  filteredData.forEach(it=>{ 
-    csv+=`${it.source},${it.category||''},${it.type},${it.paymentSource},${it.amount},${it.date},${(it.notes||'')}\n`; 
-  }); 
-  
-  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'}); 
-  const url=URL.createObjectURL(blob); 
-  const a=document.createElement('a'); 
-  a.href=url; 
-  a.download='تقرير_العمارة_مفلتر.csv'; 
-  document.body.appendChild(a); 
-  a.click(); 
-  document.body.removeChild(a); 
+function toggleTheme(){
+  document.documentElement.toggleAttribute("data-theme");
 }
 
-function previewReport(){ const tbody=document.getElementById('printLog'); tbody.innerHTML=''; data.forEach(it=>{ const tr=document.createElement('tr'); tr.innerHTML=`<td>${it.source}</td><td>${it.type}</td><td>${it.paymentSource}</td><td>${it.amount}</td><td>${it.date}</td><td>${it.notes||''}</td>`; tbody.appendChild(tr); }); updateBalances(); document.getElementById('printCash').textContent=document.getElementById('balanceCash').textContent; document.getElementById('printApp').textContent=document.getElementById('balanceApp').textContent; document.getElementById('printTotal').textContent=document.getElementById('balanceTotal').textContent; document.getElementById('printRemaining').textContent=document.getElementById('balanceRemaining').textContent; document.getElementById('printExpenses').textContent=document.getElementById('totalExpenses').textContent; document.getElementById('printPurchases').textContent=document.getElementById('totalPurchases').textContent; document.getElementById('printPage').style.display='block'; document.getElementById('printPage').scrollIntoView({behavior:'smooth'}); }
-
-function printReport(){ previewReport(); setTimeout(()=>{ window.print(); },400); }
-
-function toggleTheme(){ if(document.documentElement.getAttribute('data-theme')==='dark'){ document.documentElement.removeAttribute('data-theme'); localStorage.setItem('amarah_theme','light'); } else { document.documentElement.setAttribute('data-theme','dark'); localStorage.setItem('amarah_theme','dark'); } }
-
-function downloadBackup(){ 
-  const blob=new Blob([JSON.stringify(data)],{type:'application/json'}); 
-  const url=URL.createObjectURL(blob); 
-  const a=document.createElement('a'); 
-  a.href=url; 
-  a.download='amarah_backup.json'; 
-  document.body.appendChild(a); 
-  a.click(); 
-  document.body.removeChild(a); 
-  localStorage.setItem('lastBackupTime', Date.now()); // تحديث وقت آخر نسخة احتياطية
+if(localStorage.getItem("login")) {
+  loginModal.style.display="none";
+  show();
 }
-
-function restoreBackup(){ const input=document.createElement('input'); input.type='file'; input.accept='application/json'; input.onchange=e=>{ const file=e.target.files[0]; const reader=new FileReader(); reader.onload=function(){ try{ const arr=JSON.parse(reader.result); if(Array.isArray(arr)){ data=arr; localStorage.setItem('amarah',JSON.stringify(data)); renderLog(); alert('تم استعادة النسخة'); } else alert('صيغ الملف غير صحيحة'); }catch(err){ alert('فشل في قراءة الملف'); } }; reader.readAsText(file); }; input.click(); }
-
-function checkBackupAlert(){
-  const lastBackupTime = localStorage.getItem('lastBackupTime');
-  const sevenDays = 7 * 24 * 60 * 60 * 1000; // 7 أيام بالمللي ثانية
-  
-  // إذا لم يكن هناك وقت لآخر نسخة احتياطية، أو مر أكثر من 7 أيام
-  if (!lastBackupTime || (Date.now() - lastBackupTime > sevenDays)) {
-    document.getElementById('backupAlert').style.display = 'block';
-  }
-}
-
-function hideBackupAlert(){
-  document.getElementById('backupAlert').style.display = 'none';
-  // يمكننا هنا حفظ وقت الإخفاء المؤقت إذا أردنا إظهاره مرة أخرى بعد فترة قصيرة
-}
-
-// تهيئة العرض
-populateMonthFilter();
-checkLogin();
-checkBackupAlert();
 </script>
-
-<div class="login-modal" id="loginModal">
-  <div class="login-content">
-    <h3 id="loginTitle">تسجيل الدخول</h3>
-    
-    <input type="password" id="passwordInput" class="input" placeholder="كلمة المرور (admin)" />
-    <button class="primary" onclick="login()">دخول</button>
-    <button class="ghost" onclick="openChangePasswordModal()">تغيير كلمة المرور</button>
-  </div>
-</div>
-
-<div class="backup-alert" id="backupAlert">
-  <p>لم تقم بتحميل نسخة احتياطية منذ أكثر من 7 أيام. يرجى تحميل نسخة احتياطية لضمان عدم فقدان البيانات.</p>
-  <button class="primary" onclick="downloadBackup(); hideBackupAlert()">تحميل نسخة احتياطية الآن</button>
-  <button class="ghost" onclick="hideBackupAlert()">تجاهل مؤقتاً</button>
-</div>
-
-<div class="modal" id="changePasswordModal">
-  <div class="modal-content">
-    <h3>تغيير كلمة المرور</h3>
-    <input type="password" id="oldPasswordInput" class="input" placeholder="كلمة المرور القديمة" />
-    <input type="password" id="newPasswordInput" class="input" placeholder="كلمة المرور الجديدة" />
-    <input type="password" id="confirmNewPasswordInput" class="input" placeholder="تأكيد كلمة المرور الجديدة" />
-    <div style="display:flex;gap:8px;margin-top:10px">
-      <button class="primary" onclick="changePassword()">حفظ كلمة المرور</button>
-      <button onclick="closeChangePasswordModal()" class="ghost">إلغاء</button>
-    </div>
-  </div>
-</div>
 
 </body>
 </html>
