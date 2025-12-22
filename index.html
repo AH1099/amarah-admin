@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>إدارة صندوق عمارة الريان 4</title>
-
 <style>
 :root{
   --bg:#f4f6fb;
@@ -25,194 +24,34 @@
   --glass: rgba(255,255,255,0.03);
 }
 *{box-sizing:border-box}
-body{
-  margin:0;
-  font-family: system-ui,-apple-system,Segoe UI,Roboto;
-  background:var(--bg);
-  color:var(--text);
-  padding:16px;
-}
-.card{
-  background:var(--card);
-  padding:14px;
-  border-radius:12px;
-  margin-bottom:14px;
-  box-shadow:0 6px 18px var(--glass);
-}
-.input,select,button,textarea{
-  width:100%;
-  padding:10px;
-  border-radius:10px;
-  border:1px solid #ddd;
-  font-size:15px;
-  margin-bottom:10px;
-}
-button.primary{background:var(--accent);color:#fff;border:none}
-button.ghost{background:transparent;border:1px solid #ccc}
-
-.header{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  justify-content:center;
-  margin-bottom:12px
-}
-.header img{
-  width:56px;
-  height:56px;
-  border-radius:10px;
-}
-.small{font-size:13px;color:var(--muted)}
-
-.controls{
-  display:flex;
-  gap:8px;
-  flex-wrap:wrap;
-  justify-content:center;
-}
-
-.login-modal{
-  position:fixed;
-  inset:0;
-  background:var(--bg);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  z-index:999;
-}
-.login-content{
-  background:var(--card);
-  padding:30px;
-  width:100%;
-  max-width:360px;
-  border-radius:14px;
-  box-shadow:0 10px 30px rgba(0,0,0,.2);
-  border-top:5px solid var(--accent);
-}
-
-.totals{
-  display:flex;
-  gap:8px;
-  flex-wrap:wrap
-}
-.total{
-  flex:1;
-  min-width:140px;
-  background:var(--card);
-  padding:12px;
-  border-radius:10px;
-  box-shadow:0 4px 12px var(--glass)
-}
+body { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background:var(--bg); color:var(--text); padding:18px; }
+.login{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:var(--bg);z-index:1000}
+.box{background:var(--card);padding:30px;border-radius:14px;width:100%;max-width:360px;box-shadow:0 10px 30px rgba(0,0,0,.2);text-align:center}
+input,button{width:100%;padding:12px;margin:8px 0;border-radius:10px;border:1px solid #ccc;font-size:15px}
+button.primary{background:var(--accent);color:white;border:none;cursor:pointer}
+.hidden{display:none}
+/* باقي CSS كما هو */
+.header { display:flex; align-items:center; gap:12px; justify-content:center; margin-bottom:12px }
+.header-logo img{ width:64px; height:64px; border-radius:10px; background:var(--card); padding:8px; box-shadow:0 6px 18px var(--glass)}
+.header h1{ margin:0; font-size:18px }
+.controls { display:flex; gap:8px; justify-content:center; margin-bottom:12px }
+.card { background:var(--card); padding:14px; border-radius:12px; margin-bottom:14px; box-shadow:0 6px 18px var(--glass); }
+.row{display:flex;gap:8px}
+.input, select, button, textarea{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(0,0,0,0.06);font-size:15px}
+select,input[type=number]{-moz-appearance:textfield}
+button.ghost{background:transparent;border:1px solid rgba(0,0,0,0.06);cursor:pointer}
+.totals{display:flex;gap:8px;flex-wrap:wrap}
+.total{flex:1;min-width:140px;padding:12px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.01));}
 .total h4{margin:0;font-size:13px;color:var(--muted)}
-.total p{margin-top:6px;font-size:18px;font-weight:700}
-
-@media(min-width:800px){
-  body{max-width:900px;margin:auto}
-}
-</style>
-</head>
-
-<body>
-
-<!-- LOGIN -->
-<div class="login-modal" id="loginModal">
-  <div class="login-content">
-    <h3>تسجيل الدخول</h3>
-    <input id="username" class="input" placeholder="اسم المستخدم">
-    <input id="password" type="password" class="input" placeholder="كلمة المرور">
-    <button class="primary" onclick="login()">دخول</button>
-    <div class="small">admin / admin</div>
-  </div>
-</div>
-
-<!-- HEADER -->
-<div class="header">
-  <img src="https://cdn-icons-png.flaticon.com/512/69/69524.png">
-  <div>
-    <h2>إدارة صندوق عمارة الريان 4</h2>
-    <div class="small">متوافق مع الجوال والكمبيوتر</div>
-  </div>
-</div>
-
-<div class="controls" id="mainControls" style="display:none">
-  <button class="primary" onclick="toggleTheme()">تبديل النمط</button>
-  <button class="ghost" onclick="logout()">تسجيل خروج</button>
-</div>
-
-<div class="card" id="totalsCard" style="display:none">
-  <div class="totals">
-    <div class="total"><h4>الرصيد</h4><p id="balance">0</p></div>
-  </div>
-</div>
-
-<div class="card" id="addCard" style="display:none">
-  <h3>إضافة حركة</h3>
-  <select id="type" class="input">
-    <option value="دخل">دخل</option>
-    <option value="مصروف">مصروف</option>
-  </select>
-  <input id="title" class="input" placeholder="اسم الحركة">
-  <input id="amount" type="number" class="input" placeholder="المبلغ">
-  <button class="primary" onclick="addEntry()">إضافة</button>
-</div>
-
-<div class="card" id="logCard" style="display:none">
-  <h3>السجل</h3>
-  <div id="log"></div>
-</div>
-
-<script>
-const USER="admin", PASS="admin";
-let data = JSON.parse(localStorage.getItem("amarah")||"[]");
-
-function login(){
-  if(username.value===USER && password.value===PASS){
-    localStorage.setItem("login","1");
-    loginModal.style.display="none";
-    show();
-  }else alert("بيانات الدخول غير صحيحة");
-}
-
-function logout(){
-  localStorage.removeItem("login");
-  location.reload();
-}
-
-function show(){
-  mainControls.style.display="flex";
-  totalsCard.style.display="block";
-  addCard.style.display="block";
-  logCard.style.display="block";
-  render();
-}
-
-function addEntry(){
-  if(!title.value||!amount.value) return;
-  data.push({t:type.value,n:title.value,a:+amount.value});
-  localStorage.setItem("amarah",JSON.stringify(data));
-  title.value=amount.value="";
-  render();
-}
-
-function render(){
-  let bal=0;
-  log.innerHTML="";
-  data.forEach(e=>{
-    bal+= e.t==="دخل"?e.a:-e.a;
-    log.innerHTML+=`<div class="small">${e.n} — ${e.a} شيكل</div>`;
-  });
-  balance.textContent=bal+" شيكل";
-}
-
-function toggleTheme(){
-  document.documentElement.toggleAttribute("data-theme");
-}
-
-if(localStorage.getItem("login")) {
-  loginModal.style.display="none";
-  show();
-}
-</script>
-
-</body>
-</html>
+.total p{margin:8px 0 0 0;font-size:18px;font-weight:700}
+.entry{padding:10px;border-bottom:1px dashed rgba(0,0,0,0.05)}
+.entry .meta{font-size:13px;color:var(--muted)}
+.action-buttons{display:flex;gap:6px;justify-content:flex-start;margin-top:8px}
+.btn-edit{background:var(--warning);border:none;padding:6px 10px;border-radius:8px;cursor:pointer}
+.btn-del{background:var(--danger);border:none;padding:6px 10px;border-radius:8px;color:white;cursor:pointer}
+.small{font-size:13px;color:var(--muted)}
+.print-page{display:none}
+.footer-note{font-size:13px;color:var(--muted);text-align:center;margin-top:8px}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);align-items:center;justify-content:center;z-index:999}
+.modal-content{background:var(--card);padding:20px;border-radius:12px;width:100%;max-width:360px;}
+@media(min-width:800px){.container{max-width:900
