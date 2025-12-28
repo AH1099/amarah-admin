@@ -3,144 +3,246 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>إدارة صندوق عمارة الريان 4</title>
-
+<title>نظام إدارة عمارة الريان 4</title>
 <style>
 :root{
-  --bg:#f4f6fb;
-  --card:#ffffff;
-  --text:#0f1724;
-  --accent:#0b57d0;
-  --muted:#6b7280;
-  --danger:#ff3b30;
-  --warning:#ff9f0a;
-  --glass: rgba(11,87,208,0.06);
+  --bg:#f4f6fb; --card:#ffffff; --text:#0f1724; --accent:#0b57d0;
+  --muted:#6b7280; --danger:#ff3b30; --warning:#ff9f0a; --glass: rgba(11,87,208,0.06);
 }
 [data-theme="dark"]{
-  --bg:#0b1220;
-  --card:#0f1724;
-  --text:#e6eef8;
-  --accent:#3da0ff;
-  --muted:#94a3b8;
-  --glass: rgba(255,255,255,0.03);
+  --bg:#0b1220; --card:#0f1724; --text:#e6eef8; --accent:#3da0ff; --muted:#94a3b8; --glass: rgba(255,255,255,0.03);
 }
-*{box-sizing:border-box}
-body{
-  margin:0;
-  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial;
-  background:var(--bg);
-  color:var(--text);
-  padding:18px;
-}
-
-.login{
-  position:fixed;
-  inset:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:var(--bg);
-  z-index:1000
-}
-.box{
-  background:var(--card);
-  padding:30px;
-  border-radius:14px;
-  width:100%;
-  max-width:360px;
-  box-shadow:0 10px 30px rgba(0,0,0,.2);
-  text-align:center
-}
-input,button{
-  width:100%;
-  padding:12px;
-  margin:8px 0;
-  border-radius:10px;
-  border:1px solid #ccc;
-  font-size:15px
-}
-button.primary{
-  background:var(--accent);
-  color:white;
-  border:none;
-  cursor:pointer
-}
-.hidden{display:none}
-
-.header{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  justify-content:center;
-  margin-bottom:12px
-}
-.header h1{
-  margin:0;
-  font-size:18px
-}
-
-.card{
-  background:var(--card);
-  padding:14px;
-  border-radius:12px;
-  margin-bottom:14px;
-  box-shadow:0 6px 18px var(--glass)
-}
-
-.footer-note{
-  font-size:13px;
-  color:var(--muted);
-  text-align:center;
-  margin-top:12px
-}
-
-@media (min-width: 800px){
-  .container{
-    max-width:900px;
-    margin:auto;
-  }
-}
+*{box-sizing:border-box;margin:0;padding:0;font-family:system-ui, Arial, sans-serif;}
+body{background:var(--bg);color:var(--text);}
+.hidden{display:none;}
+button{cursor:pointer;border:none;border-radius:6px;padding:6px 12px;margin:2px;}
+button.primary{background:var(--accent);color:white;}
+button.danger{background:var(--danger);color:white;}
+button.warning{background:var(--warning);color:white;}
+.container{max-width:1000px;margin:auto;padding:20px;}
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
+.header h1{font-size:24px;}
+.dashboard{display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap;}
+.card{background:var(--card);padding:20px;border-radius:10px;flex:1;min-width:180px;box-shadow:0 4px 12px var(--glass);}
+.table-container{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;}
+th,td{padding:8px;text-align:center;border-bottom:1px solid #ccc;}
+th{background:var(--accent);color:white;}
+input,select{padding:6px;border-radius:6px;border:1px solid #ccc;width:100%;}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;z-index:999;}
+.modal-content{background:var(--card);padding:20px;border-radius:10px;width:100%;max-width:400px;}
 </style>
 </head>
-
 <body>
 
-<div class="login" id="loginBox">
-  <div class="box">
-    <h3>تسجيل الدخول</h3>
-    <input type="password" id="password" placeholder="كلمة المرور">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<!-- شاشة تسجيل الدخول -->
+<div class="modal" id="loginModal">
+  <div class="modal-content">
+    <h2>تسجيل الدخول</h2>
+    <input type="password" id="passwordInput" placeholder="كلمة المرور">
     <button class="primary" onclick="login()">دخول</button>
-    <p id="loginError" style="color:red;display:none">كلمة المرور غير صحيحة</p>
+    <p id="loginError" style="color:red;display:none;">كلمة المرور خاطئة</p>
   </div>
 </div>
 
+<!-- لوحة الإدارة -->
 <div class="container hidden" id="app">
   <div class="header">
-    <h1>إدارة صندوق عمارة الريان 4</h1>
+    <h1>نظام إدارة عمارة الريان 4</h1>
+    <div>
+      <button onclick="showAddModal()">إضافة عملية</button>
+      <button onclick="generateReports()">توليد تقرير PDF</button>
+    </div>
   </div>
 
-  <div class="card">
-    <p>أهلاً بك في لوحة الإدارة</p>
+  <!-- لوحة الأرصدة -->
+  <div class="dashboard">
+    <div class="card">
+      <h3>الرصيد الكلي</h3>
+      <p id="totalBalance">0 شيكل</p>
+    </div>
+    <div class="card">
+      <h3>رصيد الكاش</h3>
+      <p id="cashBalance">0 شيكل</p>
+    </div>
+    <div class="card">
+      <h3>رصيد التطبيق</h3>
+      <p id="appBalance">0 شيكل</p>
+    </div>
   </div>
 
-  <div class="footer-note">
-    © صندوق عمارة الريان 4
+  <!-- جدول العمليات -->
+  <div class="table-container">
+    <table id="transactionsTable">
+      <thead>
+        <tr>
+          <th>التاريخ</th>
+          <th>نوع العملية</th>
+          <th>الشقة</th>
+          <th>المبلغ</th>
+          <th>نوع الرصيد</th>
+          <th>الوصف</th>
+          <th>أدوات</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- مودال لإضافة عملية -->
+<div class="modal hidden" id="addModal">
+  <div class="modal-content">
+    <h3>إضافة عملية</h3>
+    <select id="typeSelect">
+      <option value="income">دخل</option>
+      <option value="expense">مصروف</option>
+    </select>
+    <select id="apartmentSelect">
+      <option value="">اختر الشقة (للدخل فقط)</option>
+    </select>
+    <select id="balanceTypeSelect">
+      <option value="cash">كاش</option>
+      <option value="app">تطبيق</option>
+    </select>
+    <input type="number" id="amountInput" placeholder="المبلغ">
+    <input type="text" id="descInput" placeholder="الوصف">
+    <button class="primary" onclick="addTransaction()">إضافة</button>
+    <button class="danger" onclick="closeAddModal()">إلغاء</button>
   </div>
 </div>
 
 <script>
+const { jsPDF } = window.jspdf;
+
+// كلمة المرور
 const PASSWORD = "1234";
 
-function login(){
-  const input = document.getElementById("password").value;
-  if(input === PASSWORD){
-    document.getElementById("loginBox").classList.add("hidden");
-    document.getElementById("app").classList.remove("hidden");
-  }else{
-    document.getElementById("loginError").style.display = "block";
+// إنشاء قائمة الشقق
+const apartments = [];
+for(let f=1;f<=7;f++){
+  for(let s=1;s<=4;s++){
+    apartments.push(`طابق ${f} - شقة ${s}`);
   }
 }
-</script>
+const apartmentSelect = document.getElementById("apartmentSelect");
+apartments.forEach(a=>{
+  const opt = document.createElement("option");
+  opt.value = a; opt.textContent = a;
+  apartmentSelect.appendChild(opt);
+});
 
+let transactions = JSON.parse(localStorage.getItem("transactions"))||[];
+
+// تسجيل الدخول
+function login(){
+  const pw = document.getElementById("passwordInput").value;
+  if(pw===PASSWORD){
+    document.getElementById("loginModal").classList.add("hidden");
+    document.getElementById("app").classList.remove("hidden");
+    renderTransactions();
+  }else{
+    document.getElementById("loginError").style.display="block";
+  }
+}
+
+function showAddModal(){document.getElementById("addModal").classList.remove("hidden");}
+function closeAddModal(){
+  document.getElementById("addModal").classList.add("hidden");
+  document.getElementById("amountInput").value="";
+  document.getElementById("descInput").value="";
+  document.getElementById("typeSelect").value="income";
+  document.getElementById("apartmentSelect").value="";
+  document.getElementById("balanceTypeSelect").value="cash";
+}
+
+function addTransaction(){
+  const type = document.getElementById("typeSelect").value;
+  const apartment = document.getElementById("apartmentSelect").value;
+  const balanceType = document.getElementById("balanceTypeSelect").value;
+  const amount = parseFloat(document.getElementById("amountInput").value);
+  const desc = document.getElementById("descInput").value;
+  if(type==='income' && !apartment){alert("اختر الشقة للمدخل"); return;}
+  if(!amount){alert("ادخل المبلغ"); return;}
+  const t = {date:new Date().toLocaleDateString(),type,apartment:type==='income'?apartment:'العمارة',balanceType,amount,desc};
+  transactions.push(t);
+  localStorage.setItem("transactions",JSON.stringify(transactions));
+  closeAddModal();
+  renderTransactions();
+}
+
+function deleteTransaction(index){
+  if(confirm("هل أنت متأكد من الحذف؟")){
+    transactions.splice(index,1);
+    localStorage.setItem("transactions",JSON.stringify(transactions));
+    renderTransactions();
+  }
+}
+
+function renderTransactions(){
+  const tbody=document.querySelector("#transactionsTable tbody");
+  tbody.innerHTML="";
+  let totalIncome=0,totalExpense=0,cashBalance=0,appBalance=0;
+  transactions.forEach((t,i)=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td>${t.date}</td><td>${t.type==="income"?"دخل":"مصروف"}</td><td>${t.apartment}</td><td>${t.amount}</td><td>${t.balanceType==="cash"?"كاش":"تطبيق"}</td><td>${t.desc}</td><td><button class="warning" onclick="editTransaction(${i})">تعديل</button><button class="danger" onclick="deleteTransaction(${i})">حذف</button></td>`;
+    tbody.appendChild(tr);
+    if(t.type==="income"){ totalIncome+=t.amount; if(t.balanceType==="cash") cashBalance+=t.amount; else appBalance+=t.amount;}
+    else{ totalExpense+=t.amount; if(t.balanceType==="cash") cashBalance-=t.amount; else appBalance-=t.amount;}
+  });
+  document.getElementById("cashBalance").textContent = cashBalance + " شيكل";
+  document.getElementById("appBalance").textContent = appBalance + " شيكل";
+  document.getElementById("totalBalance").textContent = (cashBalance+appBalance) + " شيكل";
+}
+
+function editTransaction(index){
+  const t = transactions[index];
+  document.getElementById("typeSelect").value=t.type;
+  document.getElementById("apartmentSelect").value=t.apartment!=="العمارة"?t.apartment:"";
+  document.getElementById("amountInput").value=t.amount;
+  document.getElementById("descInput").value=t.desc;
+  document.getElementById("balanceTypeSelect").value=t.balanceType;
+  showAddModal();
+  deleteTransaction(index);
+}
+
+// توليد تقرير PDF
+function generateReports(){
+  const doc = new jsPDF({orientation:'p',unit:'pt',format:'a4'});
+  let y=40;
+  doc.setFontSize(16);
+  doc.text("تقرير عمارة الريان 4",300,y,{align:'center'});
+  y+=30;
+
+  // تقرير العمارة بالكامل
+  doc.setFontSize(12);
+  doc.text("تقرير العمارة بالكامل",40,y);
+  y+=20;
+  const cashBalance=transactions.filter(t=>t.balanceType==="cash").reduce((a,t)=> t.type==="income"?a+t.amount:a-t.amount,0);
+  const appBalance=transactions.filter(t=>t.balanceType==="app").reduce((a,t)=> t.type==="income"?a+t.amount:a-t.amount,0);
+  const totalBalance=cashBalance+appBalance;
+  doc.text(`رصيد الكاش: ${cashBalance} شيكل`,40,y); y+=15;
+  doc.text(`رصيد التطبيق: ${appBalance} شيكل`,40,y); y+=15;
+  doc.text(`الرصيد الكلي: ${totalBalance} شيكل`,40,y); y+=25;
+
+  // تقرير كل شقة
+  apartments.forEach(apt=>{
+    doc.text(`شقة: ${apt}`,40,y); y+=15;
+    const tapt=transactions.filter(t=>t.apartment===apt);
+    if(tapt.length===0){doc.text("لا توجد عمليات",50,y); y+=15; return;}
+    tapt.forEach(tr=>{
+      doc.text(`${tr.date} | ${tr.type==="income"?"دخل":"مصروف"} | ${tr.amount} | ${tr.balanceType==="cash"?"كاش":"تطبيق"} | ${tr.desc}`,50,y);
+      y+=12;
+      if(y>750){doc.addPage(); y=40;}
+    });
+    y+=10;
+  });
+
+  doc.save("Amara_Report.pdf");
+}
+
+</script>
 </body>
 </html>
