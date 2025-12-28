@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>إدارة صندوق عمارة الريان 4</title>
+
 <style>
 :root{
   --bg:#f4f6fb;
@@ -24,34 +25,122 @@
   --glass: rgba(255,255,255,0.03);
 }
 *{box-sizing:border-box}
-body { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background:var(--bg); color:var(--text); padding:18px; }
-.login{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:var(--bg);z-index:1000}
-.box{background:var(--card);padding:30px;border-radius:14px;width:100%;max-width:360px;box-shadow:0 10px 30px rgba(0,0,0,.2);text-align:center}
-input,button{width:100%;padding:12px;margin:8px 0;border-radius:10px;border:1px solid #ccc;font-size:15px}
-button.primary{background:var(--accent);color:white;border:none;cursor:pointer}
+body{
+  margin:0;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial;
+  background:var(--bg);
+  color:var(--text);
+  padding:18px;
+}
+
+.login{
+  position:fixed;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:var(--bg);
+  z-index:1000
+}
+.box{
+  background:var(--card);
+  padding:30px;
+  border-radius:14px;
+  width:100%;
+  max-width:360px;
+  box-shadow:0 10px 30px rgba(0,0,0,.2);
+  text-align:center
+}
+input,button{
+  width:100%;
+  padding:12px;
+  margin:8px 0;
+  border-radius:10px;
+  border:1px solid #ccc;
+  font-size:15px
+}
+button.primary{
+  background:var(--accent);
+  color:white;
+  border:none;
+  cursor:pointer
+}
 .hidden{display:none}
-/* باقي CSS كما هو */
-.header { display:flex; align-items:center; gap:12px; justify-content:center; margin-bottom:12px }
-.header-logo img{ width:64px; height:64px; border-radius:10px; background:var(--card); padding:8px; box-shadow:0 6px 18px var(--glass)}
-.header h1{ margin:0; font-size:18px }
-.controls { display:flex; gap:8px; justify-content:center; margin-bottom:12px }
-.card { background:var(--card); padding:14px; border-radius:12px; margin-bottom:14px; box-shadow:0 6px 18px var(--glass); }
-.row{display:flex;gap:8px}
-.input, select, button, textarea{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(0,0,0,0.06);font-size:15px}
-select,input[type=number]{-moz-appearance:textfield}
-button.ghost{background:transparent;border:1px solid rgba(0,0,0,0.06);cursor:pointer}
-.totals{display:flex;gap:8px;flex-wrap:wrap}
-.total{flex:1;min-width:140px;padding:12px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.01));}
-.total h4{margin:0;font-size:13px;color:var(--muted)}
-.total p{margin:8px 0 0 0;font-size:18px;font-weight:700}
-.entry{padding:10px;border-bottom:1px dashed rgba(0,0,0,0.05)}
-.entry .meta{font-size:13px;color:var(--muted)}
-.action-buttons{display:flex;gap:6px;justify-content:flex-start;margin-top:8px}
-.btn-edit{background:var(--warning);border:none;padding:6px 10px;border-radius:8px;cursor:pointer}
-.btn-del{background:var(--danger);border:none;padding:6px 10px;border-radius:8px;color:white;cursor:pointer}
-.small{font-size:13px;color:var(--muted)}
-.print-page{display:none}
-.footer-note{font-size:13px;color:var(--muted);text-align:center;margin-top:8px}
-.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);align-items:center;justify-content:center;z-index:999}
-.modal-content{background:var(--card);padding:20px;border-radius:12px;width:100%;max-width:360px;}
-@media(min-width:800px){.container{max-width:900
+
+.header{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  justify-content:center;
+  margin-bottom:12px
+}
+.header h1{
+  margin:0;
+  font-size:18px
+}
+
+.card{
+  background:var(--card);
+  padding:14px;
+  border-radius:12px;
+  margin-bottom:14px;
+  box-shadow:0 6px 18px var(--glass)
+}
+
+.footer-note{
+  font-size:13px;
+  color:var(--muted);
+  text-align:center;
+  margin-top:12px
+}
+
+@media (min-width: 800px){
+  .container{
+    max-width:900px;
+    margin:auto;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="login" id="loginBox">
+  <div class="box">
+    <h3>تسجيل الدخول</h3>
+    <input type="password" id="password" placeholder="كلمة المرور">
+    <button class="primary" onclick="login()">دخول</button>
+    <p id="loginError" style="color:red;display:none">كلمة المرور غير صحيحة</p>
+  </div>
+</div>
+
+<div class="container hidden" id="app">
+  <div class="header">
+    <h1>إدارة صندوق عمارة الريان 4</h1>
+  </div>
+
+  <div class="card">
+    <p>أهلاً بك في لوحة الإدارة</p>
+  </div>
+
+  <div class="footer-note">
+    © صندوق عمارة الريان 4
+  </div>
+</div>
+
+<script>
+const PASSWORD = "1234";
+
+function login(){
+  const input = document.getElementById("password").value;
+  if(input === PASSWORD){
+    document.getElementById("loginBox").classList.add("hidden");
+    document.getElementById("app").classList.remove("hidden");
+  }else{
+    document.getElementById("loginError").style.display = "block";
+  }
+}
+</script>
+
+</body>
+</html>
