@@ -12,26 +12,59 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 
 <style>
-body { background:#f5f5f5; }
-.card p { font-size:20px; margin:0; }
+body{background:#f5f5f5}
+#previewModal iframe{width:100%;height:80vh;border:none}
 </style>
 </head>
 
 <body>
 
-<div class="container my-4">
+<!-- ================= LOGIN ================= -->
+<div class="modal show d-block" id="loginModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header"><h5>تسجيل الدخول</h5></div>
+      <div class="modal-body">
+        <input id="username" class="form-control mb-2" placeholder="اسم المستخدم">
+        <input id="password" type="password" class="form-control mb-2" placeholder="كلمة المرور">
+        <div id="loginError" class="text-danger d-none">بيانات الدخول غير صحيحة</div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary w-100" onclick="login()">دخول</button>
+      </div>
+    </div>
+  </div>
+</div>
 
-<h3 class="text-center mb-4">نظام إدارة عمارة الريان 4</h3>
+<!-- ================= APP ================= -->
+<div id="app" class="d-none">
 
-<div class="row text-center mb-3">
-  <div class="col-md-4"><div class="card p-3">الرصيد الكلي<br><b id="total">0</b></div></div>
-  <div class="col-md-4"><div class="card p-3">رصيد الكاش<br><b id="cash">0</b></div></div>
-  <div class="col-md-4"><div class="card p-3">رصيد التطبيق<br><b id="app">0</b></div></div>
+<nav class="navbar bg-white shadow-sm mb-3">
+  <div class="container-fluid">
+    <span class="navbar-brand">إدارة عمارة الريان 4</span>
+    <div class="dropdown">
+      <span class="dropdown-toggle" data-bs-toggle="dropdown">
+        <i class="bi bi-person-circle"></i> <span id="loggedUser"></span>
+      </span>
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li><a class="dropdown-item" onclick="logout()">تسجيل خروج</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+
+<div class="row text-center mb-4">
+  <div class="col-md-4 mb-2"><div class="card p-3">الرصيد الكلي<br><b id="total">0</b></div></div>
+  <div class="col-md-4 mb-2"><div class="card p-3">رصيد الكاش<br><b id="cash">0</b></div></div>
+  <div class="col-md-4 mb-2"><div class="card p-3">رصيد التطبيق<br><b id="appBal">0</b></div></div>
 </div>
 
 <div class="mb-3 d-flex gap-2">
-  <button class="btn btn-success" onclick="add()">إضافة عملية</button>
-  <button class="btn btn-primary" onclick="generatePDF()">تحميل تقرير PDF</button>
+  <button class="btn btn-success" onclick="showAdd()">إضافة عملية</button>
+  <button class="btn btn-info" onclick="previewPDF()">معاينة التقرير</button>
+  <button class="btn btn-primary" onclick="generatePDF()">تحميل PDF</button>
 </div>
 
 <table class="table table-bordered table-striped bg-white">
@@ -44,113 +77,149 @@ body { background:#f5f5f5; }
 <th>المبلغ</th>
 <th>الرصيد</th>
 <th>الوصف</th>
+<th>أدوات</th>
 </tr>
 </thead>
 <tbody id="table"></tbody>
 </table>
 
 </div>
+</div>
+
+<!-- ================= ADD MODAL ================= -->
+<div class="modal fade" id="addModal">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header"><h5>إضافة عملية</h5></div>
+<div class="modal-body">
+<select id="type" class="form-select mb-2">
+<option value="دخل">دخل</option>
+<option value="مصروف">مصروف</option>
+</select>
+
+<select id="apartment" class="form-select mb-2">
+<option>طابق 1 - شقة 1</option>
+<option>طابق 1 - شقة 2</option>
+<option>طابق 2 - شقة 1</option>
+</select>
+
+<select id="balance" class="form-select mb-2">
+<option>كاش</option>
+<option>تطبيق</option>
+</select>
+
+<input id="amount" type="number" class="form-control mb-2" placeholder="المبلغ">
+<input id="desc" class="form-control mb-2" placeholder="الوصف">
+</div>
+<div class="modal-footer">
+<button class="btn btn-primary" onclick="save()">حفظ</button>
+</div>
+</div>
+</div>
+</div>
+
+<!-- ================= PREVIEW ================= -->
+<div class="modal fade" id="previewModal">
+<div class="modal-dialog modal-xl">
+<div class="modal-content">
+<div class="modal-header"><h5>معاينة التقرير</h5></div>
+<div class="modal-body">
+<iframe id="pdfFrame"></iframe>
+</div>
+</div>
+</div>
+</div>
 
 <script>
-/* ==== بيانات الشقق ==== */
-const apartments = [
- {name:"طابق 1 - شقة 1", owner:"أحمد", phone:"0590000000"},
- {name:"طابق 1 - شقة 2", owner:"ليلى", phone:"0590000001"},
- {name:"طابق 2 - شقة 1", owner:"سالم", phone:"0590000002"}
-];
-
-/* ==== العمليات ==== */
+const { jsPDF } = window.jspdf;
 let transactions = JSON.parse(localStorage.getItem("transactions")||"[]");
 
-function add(){
- const apt = prompt("اسم الشقة");
- const type = prompt("دخل / مصروف");
- const amount = Number(prompt("المبلغ"));
- const balance = prompt("كاش / تطبيق");
- const desc = prompt("الوصف");
+/* LOGIN */
+function login(){
+ if(username.value==="admin" && password.value==="1234"){
+  loggedUser.textContent="admin";
+  loginModal.classList.add("d-none");
+  app.classList.remove("d-none");
+  render();
+ }else loginError.classList.remove("d-none");
+}
+function logout(){ location.reload(); }
 
- if(!amount) return;
-
- transactions.push({
+/* CRUD */
+function showAdd(){ new bootstrap.Modal(addModal).show(); }
+function save(){
+ const t={
   date:new Date().toLocaleString('ar-EG'),
-  type,
-  apartment:apt,
-  owner:getOwner(apt),
-  amount,
-  balance,
-  desc
+  type:type.value,
+  apartment:apartment.value,
+  owner:"—",
+  amount:+amount.value,
+  balance:balance.value,
+  desc:desc.value
+ };
+ transactions.push(t);
+ localStorage.setItem("transactions",JSON.stringify(transactions));
+ bootstrap.Modal.getInstance(addModal).hide();
+ render();
+}
+
+function render(){
+ let cash=0,app=0;
+ table.innerHTML="";
+ transactions.forEach(t=>{
+  const tr=document.createElement("tr");
+  tr.innerHTML=`
+   <td>${t.date}</td><td>${t.type}</td><td>${t.apartment}</td>
+   <td>${t.owner}</td><td>${t.amount}</td><td>${t.balance}</td>
+   <td>${t.desc}</td>
+   <td><button class="btn btn-danger btn-sm" onclick="del(${transactions.indexOf(t)})">حذف</button></td>`;
+  table.appendChild(tr);
+
+  if(t.balance==="كاش") cash+=t.type==="دخل"?t.amount:-t.amount;
+  else app+=t.type==="دخل"?t.amount:-t.amount;
  });
 
+ cash.innerText=cash+" شيكل";
+ appBal.innerText=app+" شيكل";
+ total.innerText=(cash+app)+" شيكل";
+}
+
+function del(i){
+ transactions.splice(i,1);
  localStorage.setItem("transactions",JSON.stringify(transactions));
  render();
 }
 
-function getOwner(name){
- const a = apartments.find(x=>x.name===name);
- return a ? a.owner : "-";
-}
-
-function render(){
- let cash=0, app=0;
- const tbody=document.getElementById("table");
- tbody.innerHTML="";
-
- transactions.forEach(t=>{
-  const tr=document.createElement("tr");
-  tr.innerHTML=`
-   <td>${t.date}</td>
-   <td>${t.type}</td>
-   <td>${t.apartment}</td>
-   <td>${t.owner}</td>
-   <td>${t.amount}</td>
-   <td>${t.balance}</td>
-   <td>${t.desc}</td>`;
-  tbody.appendChild(tr);
-
-  if(t.balance==="كاش") cash += t.type==="دخل"?t.amount:-t.amount;
-  else app += t.type==="دخل"?t.amount:-t.amount;
- });
-
- document.getElementById("cash").textContent=cash+" شيكل";
- document.getElementById("app").textContent=app+" شيكل";
- document.getElementById("total").textContent=(cash+app)+" شيكل";
-}
-
-render();
-
-/* ==== PDF عربي ==== */
+/* PDF */
 let AMIRI_FONT="";
 fetch("https://cdn.jsdelivr.net/gh/alif-type/amiri@master/ttf/Amiri-Regular.ttf")
-.then(res=>res.arrayBuffer())
-.then(buf=>{
- AMIRI_FONT=btoa(String.fromCharCode(...new Uint8Array(buf)));
-});
+.then(r=>r.arrayBuffer())
+.then(b=>AMIRI_FONT=btoa(String.fromCharCode(...new Uint8Array(b))));
 
 function generatePDF(){
- const { jsPDF } = window.jspdf;
- const doc = new jsPDF({orientation:"p",unit:"pt",format:"a4"});
-
- doc.addFileToVFS("Amiri.ttf", AMIRI_FONT);
+ const doc=new jsPDF({unit:"pt",format:"a4"});
+ doc.addFileToVFS("Amiri.ttf",AMIRI_FONT);
  doc.addFont("Amiri.ttf","Amiri","normal");
  doc.setFont("Amiri");
 
- doc.setFontSize(16);
  doc.text("تقرير عمارة الريان 4",300,40,{align:"center"});
-
- const rows = transactions.map(t=>[
-  t.date,t.type,t.apartment,t.owner,t.amount+" شيكل",t.balance,t.desc
- ]);
 
  doc.autoTable({
   startY:70,
   head:[["التاريخ","النوع","الشقة","المالك","المبلغ","الرصيد","الوصف"]],
-  body:rows,
+  body:transactions.map(t=>[t.date,t.type,t.apartment,t.owner,t.amount,t.balance,t.desc]),
   styles:{font:"Amiri",halign:"right"}
  });
 
  doc.save("تقرير_العمارة.pdf");
 }
+
+function previewPDF(){
+ const doc=new jsPDF();
+ generatePDF();
+}
 </script>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
